@@ -1,0 +1,7 @@
+Improve digit recognition by using alternative machine learning models
+
+Replaces TensorFlow/Keras with scikit-learn, refactors app.py to support SVM, Random Forest, and MLP classifiers, and updates .replit config.
+
+Replit-Commit-Author: Agent
+Replit-Commit-Session-Id: 59e258ee-2f4e-4d0d-b71b-bdaeb37cc38c
+Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/450218d8-74fb-4e40-8b0c-ec9b9e25effe/75e69825-0d28-4b76-9303-ed36e9a0400c.jpg
