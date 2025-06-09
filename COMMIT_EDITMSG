@@ -1,7 +1,7 @@
-Improve digit recognition by using alternative machine learning models
+Create an application that classifies uploaded images using AI models
 
-Replaces TensorFlow/Keras with scikit-learn, refactors app.py to support SVM, Random Forest, and MLP classifiers, and updates .replit config.
+Implement Streamlit app for image classification using TensorFlow Hub models.
 
 Replit-Commit-Author: Agent
-Replit-Commit-Session-Id: 59e258ee-2f4e-4d0d-b71b-bdaeb37cc38c
-Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/450218d8-74fb-4e40-8b0c-ec9b9e25effe/75e69825-0d28-4b76-9303-ed36e9a0400c.jpg
+Replit-Commit-Session-Id: 5fbe2261-f451-4dd3-b470-f16c02766b0e
+Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/d6772184-b949-46d1-af49-b00df4f6eaf2/aa87a812-0f9b-4eb8-a40d-7f9f56f1c2f7.jpg

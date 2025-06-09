@@ -1,109 +1,103 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
-import seaborn as sns
+from PIL import Image
+import streamlit as st
+import io
 
-def plot_training_history(history):
+def preprocess_image(image, model_name="MobileNetV2"):
     """
-    Plot the training and validation metrics from model training history.
+    Preprocess an image for the specified model.
     
-    Parameters:
-    -----------
-    history : History object
-        History object returned from model.fit()
-    
+    Args:
+        image (PIL.Image): The input image.
+        model_name (str): Name of the model for which to preprocess the image.
+        
     Returns:
-    --------
-    fig : matplotlib.figure.Figure
-        Figure with training history plots
+        np.array: Preprocessed image array ready for the model.
     """
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    # Use a standard size for all models
+    target_size = (224, 224)
     
-    # Accuracy plot
-    ax1.plot(history.history['accuracy'], label='Training Accuracy')
-    ax1.plot(history.history['val_accuracy'], label='Validation Accuracy')
-    ax1.set_title('Model Accuracy')
-    ax1.set_xlabel('Epoch')
-    ax1.set_ylabel('Accuracy')
-    ax1.legend(loc='lower right')
-    ax1.grid(True, linestyle='--', alpha=0.6)
-    ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
+    # Resize the image
+    image = image.resize(target_size)
     
-    # Loss plot
-    ax2.plot(history.history['loss'], label='Training Loss')
-    ax2.plot(history.history['val_loss'], label='Validation Loss')
-    ax2.set_title('Model Loss')
-    ax2.set_xlabel('Epoch')
-    ax2.set_ylabel('Loss')
-    ax2.legend(loc='upper right')
-    ax2.grid(True, linestyle='--', alpha=0.6)
-    ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+    # Convert to RGB if needed
+    if image.mode != "RGB":
+        image = image.convert("RGB")
     
-    plt.tight_layout()
-    return fig
+    # Convert to numpy array and normalize
+    img_array = np.array(image)
+    
+    # Simple normalization to [0,1]
+    img_array = img_array / 255.0
+    
+    return img_array
 
-def plot_confusion_matrix(cm):
+def get_image_display_size(image, max_width=800, max_height=600):
     """
-    Plot a confusion matrix.
+    Calculate an appropriate display size for an image while maintaining aspect ratio.
     
-    Parameters:
-    -----------
-    cm : numpy.ndarray
-        Confusion matrix to plot
-    
+    Args:
+        image (PIL.Image): The image to resize.
+        max_width (int): Maximum display width.
+        max_height (int): Maximum display height.
+        
     Returns:
-    --------
-    fig : matplotlib.figure.Figure
-        Figure with confusion matrix plot
+        tuple: (width, height) dimensions for display.
     """
-    fig, ax = plt.subplots(figsize=(10, 8))
+    # Get original dimensions
+    orig_width, orig_height = image.size
     
-    sns.heatmap(
-        cm, 
-        annot=True, 
-        fmt='d', 
-        cmap='Blues',
-        xticklabels=range(10),
-        yticklabels=range(10),
-        ax=ax
-    )
+    # If image is already smaller than max dimensions, return original size
+    if orig_width <= max_width and orig_height <= max_height:
+        return orig_width, orig_height
     
-    ax.set_xlabel('Predicted Labels')
-    ax.set_ylabel('True Labels')
-    ax.set_title('Confusion Matrix')
+    # Calculate aspect ratio
+    aspect_ratio = orig_width / orig_height
     
-    return fig
+    # Scale down to fit within max dimensions
+    if aspect_ratio > 1:  # Width > Height
+        new_width = max_width
+        new_height = int(new_width / aspect_ratio)
+    else:  # Height >= Width
+        new_height = max_height
+        new_width = int(new_height * aspect_ratio)
+    
+    # Check if height still exceeds max_height
+    if new_height > max_height:
+        new_height = max_height
+        new_width = int(new_height * aspect_ratio)
+    
+    return new_width, new_height
 
-def plot_sample_images(x_train, y_train, n_samples=10):
+def display_educational_content():
     """
-    Plot sample images from the MNIST dataset.
-    
-    Parameters:
-    -----------
-    x_train : numpy.ndarray
-        Training images
-    y_train : numpy.ndarray
-        Training labels
-    n_samples : int
-        Number of samples to display
-    
-    Returns:
-    --------
-    fig : matplotlib.figure.Figure
-        Figure with sample images
+    Display educational content about image classification in the sidebar.
     """
-    # Select random samples
-    indices = np.random.choice(len(x_train), n_samples, replace=False)
+    st.header("How Image Classification Works")
     
-    # Create figure with subplots
-    fig, axes = plt.subplots(2, 5, figsize=(15, 6))
-    axes = axes.flatten()
+    st.write("""
+    ### What is Image Classification?
     
-    for i, idx in enumerate(indices):
-        # Display the image
-        axes[i].imshow(x_train[idx], cmap='gray')
-        axes[i].set_title(f"Label: {y_train[idx]}")
-        axes[i].axis('off')
+    Image classification is a computer vision task where the algorithm identifies 
+    what's depicted in an image. The models we're using have been trained on 
+    millions of images from the ImageNet dataset.
     
-    plt.tight_layout()
-    return fig
+    ### How It Works:
+    
+    1. **Preprocessing**: Images are resized and normalized to match the model's requirements.
+    
+    2. **Feature Extraction**: The model extracts important features from the image using 
+    convolutional neural networks (CNNs).
+    
+    3. **Classification**: The model analyzes the features and predicts the probability 
+    of the image belonging to different classes.
+    
+    ### About the Models:
+    
+    **MobileNetV2** is a lightweight model designed for mobile devices.
+    
+    **EfficientNetB0** is optimized for accuracy and efficiency.
+    
+    Both models have been pre-trained on the ImageNet dataset, which contains 
+    over 1 million images across 1,000 categories.
+    """)
